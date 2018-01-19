@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class Controller2D : RaycastController {
 
-  float maxClimbAngle = 80f;
-  float maxDescendAngle = 75f;
+  public float maxSlopeAngle = 40f;
 
   public CollisionInfo collisions;
-
+  [HideInInspector]
   public Vector2 playerInput;
 
   public override void Start() {
     base.Start();
+    collisions.faceDir = 1;
   }
 
   public void Move(Vector2 displacement, bool standingOnPlatform) {
@@ -24,13 +24,13 @@ public class Controller2D : RaycastController {
     collisions.Reset();
     collisions.displacementOld = displacement;
     playerInput = input;
-
+    if (displacement.x != 0) {
+      collisions.faceDir = (int)Mathf.Sign(displacement.x);
+    }
     if (displacement.y < 0) {
       DescendSlope(ref displacement);
     }
-    if (displacement.x != 0) {
-      HorizontalCollisions(ref displacement);
-    }
+    HorizontalCollisions(ref displacement);
     if (displacement.y != 0) {
       VerticalCollisions(ref displacement);
     }
@@ -43,8 +43,13 @@ public class Controller2D : RaycastController {
   }
 
   private void HorizontalCollisions(ref Vector2 displacement) {
-    float directionX = Mathf.Sign(displacement.x);
+    float directionX = collisions.faceDir;
     float rayLength = Mathf.Abs(displacement.x) + skinWidth;
+
+    if (Mathf.Abs(displacement.x) < skinWidth) {
+      rayLength = 2 * skinWidth;
+    }
+
     for (int i = 0; i < horizontalRayCount; i++) {
       Vector2 rayOrigin = (directionX == -1) ? rayOrigin = raycastOrigins.bottomLeft : rayOrigin = raycastOrigins.bottomRight;
       rayOrigin += Vector2.up * (horizontalRaySpacing * i);
@@ -59,7 +64,7 @@ public class Controller2D : RaycastController {
         }
 
         float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
-        if (i == 0 && slopeAngle <= maxClimbAngle) {
+        if (i == 0 && slopeAngle <= maxSlopeAngle) {
           if (collisions.descendingSlope) {
             collisions.descendingSlope = false;
             displacement = collisions.displacementOld;
@@ -73,7 +78,7 @@ public class Controller2D : RaycastController {
           displacement.x += distanceToSlopeStart * directionX;
         }
 
-        if (!collisions.climbingSlope || slopeAngle > maxClimbAngle) {
+        if (!collisions.climbingSlope || slopeAngle > maxSlopeAngle) {
           displacement.x = (hit.distance - skinWidth) * directionX;
           rayLength = hit.distance;
 
@@ -162,7 +167,7 @@ public class Controller2D : RaycastController {
 
     if (hit) {
       float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
-      if (slopeAngle != 0 && slopeAngle <= maxDescendAngle) {
+      if (slopeAngle != 0 && slopeAngle <= maxSlopeAngle) {
         if (Mathf.Sign(hit.normal.x) == directionX) {
           if (hit.distance - skinWidth <= Mathf.Tan(slopeAngle * Mathf.Deg2Rad) * Mathf.Abs(displacement.x)) {
             float moveDistance = Mathf.Abs(displacement.x);
@@ -190,6 +195,7 @@ public class Controller2D : RaycastController {
     public bool climbingSlope, descendingSlope;
     public float slopeAngle, slopeAngleOld;
     public Vector2 displacementOld;
+    public int faceDir;
 
     public bool fallingThroughPlatform;
 
