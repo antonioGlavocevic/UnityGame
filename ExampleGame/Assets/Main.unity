@@ -127,7 +127,7 @@ GameObject:
   - component: {fileID: 166515438}
   m_Layer: 9
   m_Name: Moving Platform
-  m_TagString: Untagged
+  m_TagString: Platform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -254,7 +254,7 @@ GameObject:
   - component: {fileID: 235361682}
   m_Layer: 9
   m_Name: Obstacle (2)
-  m_TagString: Untagged
+  m_TagString: Platform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -351,6 +351,7 @@ GameObject:
   - component: {fileID: 292649309}
   - component: {fileID: 292649308}
   - component: {fileID: 292649307}
+  - component: {fileID: 292649313}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -474,6 +475,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0.39200002, z: 0}
+--- !u!114 &292649313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 292649306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3173061cd2af5fb46b38b2b40f34befe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1781183247
 GameObject:
   m_ObjectHideFlags: 0

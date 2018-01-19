@@ -21,6 +21,8 @@ public class Player : MonoBehaviour {
 
   Controller2D controller;
 
+  Vector2 directionalInput;
+
 	private void Start () {
     controller = GetComponent<Controller2D>();
 
@@ -30,24 +32,34 @@ public class Player : MonoBehaviour {
 	}
 
   private void Update() {
-    Vector2 input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+    CalculateVelocity();
 
-    if (Input.GetKeyDown (KeyCode.Space) && controller.collisions.below) {
-      velocity.y = maxJumpVelocity;
-    }
-    if (Input.GetKeyUp(KeyCode.Space)) {
-      if(velocity.y > minJumpVelocity) {
-        velocity.y = minJumpVelocity;
-      }
-    }
-
-    float targetVelocityX = input.x * moveSpeed;
-    velocity.x = Mathf.SmoothDamp(velocity.x, targetVelocityX, ref velocityXSmoothing, (controller.collisions.below)?accelerationTimeGrounded:accelerationTimeAirborne);
-    velocity.y += gravity * Time.deltaTime;
-    controller.Move(velocity * Time.deltaTime, input);
+    controller.Move(velocity * Time.deltaTime, directionalInput);
 
     if (controller.collisions.above || controller.collisions.below) {
       velocity.y = 0;
+    }
+  }
+
+  private void CalculateVelocity() {
+    float targetVelocityX = directionalInput.x * moveSpeed;
+    velocity.x = Mathf.SmoothDamp(velocity.x, targetVelocityX, ref velocityXSmoothing, (controller.collisions.below) ? accelerationTimeGrounded : accelerationTimeAirborne);
+    velocity.y += gravity * Time.deltaTime;
+  }
+
+  public void SetDirectionalInput(Vector2 input) {
+    directionalInput = input;
+  }
+
+  public void OnJumpInputDown() {
+    if (controller.collisions.below) {
+      velocity.y = maxJumpVelocity;
+    }
+  }
+
+  public void OnJumpInputUp() {
+    if (velocity.y > minJumpVelocity) {
+      velocity.y = minJumpVelocity;
     }
   }
 }
