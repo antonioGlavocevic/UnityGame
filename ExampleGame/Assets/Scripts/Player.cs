@@ -32,13 +32,13 @@ public class Player : MonoBehaviour {
   bool wallSliding;
   int wallDirX;
 
-	private void Start () {
+  private void Start () {
     controller = GetComponent<Controller2D>();
 
     gravity = -(2 * maxJumpHeight) / Mathf.Pow(timeToJumpApex, 2);
     maxJumpVelocity = Mathf.Abs(gravity) * timeToJumpApex;
     minJumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(gravity) * minJumpHeight);
-	}
+  }
 
   private void Update() {
     CalculateVelocity();
@@ -47,7 +47,12 @@ public class Player : MonoBehaviour {
     controller.Move(velocity * Time.deltaTime, directionalInput);
 
     if (controller.collisions.above || controller.collisions.below) {
-      velocity.y = 0;
+      if (controller.collisions.slidingDownMaxSlope) {
+        velocity.y += controller.collisions.slopeNormal.y * -gravity * Time.deltaTime;
+      }
+      else {
+        velocity.y = 0;
+      }
     }
   }
 
@@ -101,7 +106,15 @@ public class Player : MonoBehaviour {
       }
     }
     if (controller.collisions.below) {
-      velocity.y = maxJumpVelocity;
+      if (controller.collisions.slidingDownMaxSlope) {
+        if (directionalInput.x != -Mathf.Sign(controller.collisions.slopeNormal.x)) {
+          velocity.y = maxJumpVelocity * controller.collisions.slopeNormal.y;
+          velocity.x = maxJumpVelocity * controller.collisions.slopeNormal.x;
+        }
+      }
+      else {
+        velocity.y = maxJumpVelocity;
+      }
     }
   }
 
