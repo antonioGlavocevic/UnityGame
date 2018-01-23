@@ -20,7 +20,7 @@ public class RaycastController : MonoBehaviour {
   public float verticalRaySpacing;
 
   [HideInInspector]
-  public BoxCollider2D collider;
+  public new BoxCollider2D collider;
   public RaycastOrigins raycastOrigins;
 
   public virtual void Awake() {

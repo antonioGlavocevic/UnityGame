@@ -6,9 +6,11 @@ using UnityEngine;
 public class PlayerInput : MonoBehaviour {
 
   Player player;
+  Gun gun;
 
   private void Start() {
     player = GetComponent<Player>();
+    gun = GetComponent<Gun>();
   }
 
   private void Update() {

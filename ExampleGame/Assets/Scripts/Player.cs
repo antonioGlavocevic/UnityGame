@@ -31,6 +31,7 @@ public class Player : MonoBehaviour {
   Vector2 directionalInput;
   bool wallSliding;
   int wallDirX;
+  int prevFacing = 1;
 
   private void Start () {
     controller = GetComponent<Controller2D>();
@@ -41,6 +42,11 @@ public class Player : MonoBehaviour {
   }
 
   private void Update() {
+    if (prevFacing != controller.collisions.faceDir) {
+      transform.localScale = Vector3.Scale(transform.localScale, new Vector3(-1,1,1));
+      prevFacing = controller.collisions.faceDir;
+      print(transform.localScale);
+    }
     CalculateVelocity();
     HandleWallSliding();
 
@@ -107,10 +113,8 @@ public class Player : MonoBehaviour {
     }
     if (controller.collisions.below) {
       if (controller.collisions.slidingDownMaxSlope) {
-        if (directionalInput.x != -Mathf.Sign(controller.collisions.slopeNormal.x)) {
-          velocity.y = maxJumpVelocity * controller.collisions.slopeNormal.y;
-          velocity.x = maxJumpVelocity * controller.collisions.slopeNormal.x;
-        }
+        velocity.y = maxJumpVelocity * controller.collisions.slopeNormal.y;
+        velocity.x = maxJumpVelocity * controller.collisions.slopeNormal.x;
       }
       else {
         velocity.y = maxJumpVelocity;
