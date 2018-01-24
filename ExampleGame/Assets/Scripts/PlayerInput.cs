@@ -6,11 +6,9 @@ using UnityEngine;
 public class PlayerInput : MonoBehaviour {
 
   Player player;
-  Gun gun;
 
   private void Start() {
     player = GetComponent<Player>();
-    gun = GetComponent<Gun>();
   }
 
   private void Update() {
@@ -22,6 +20,9 @@ public class PlayerInput : MonoBehaviour {
     }
     if (Input.GetKeyUp(KeyCode.Space)) {
       player.OnJumpInputUp();
+    }
+    if (Input.GetMouseButton(0)) {
+      player.Shoot();
     }
   }
 }

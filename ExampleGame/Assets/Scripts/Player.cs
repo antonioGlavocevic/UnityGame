@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent (typeof (Controller2D))]
+[RequireComponent (typeof (GunController))]
 public class Player : MonoBehaviour {
 
   public float maxJumpHeight = 4f;
@@ -27,14 +28,15 @@ public class Player : MonoBehaviour {
   float velocityXSmoothing;
 
   Controller2D controller;
+  GunController gunController;
 
   Vector2 directionalInput;
   bool wallSliding;
   int wallDirX;
-  int prevFacing = 1;
 
   private void Start () {
     controller = GetComponent<Controller2D>();
+    gunController = GetComponent<GunController>();
 
     gravity = -(2 * maxJumpHeight) / Mathf.Pow(timeToJumpApex, 2);
     maxJumpVelocity = Mathf.Abs(gravity) * timeToJumpApex;
@@ -42,11 +44,6 @@ public class Player : MonoBehaviour {
   }
 
   private void Update() {
-    if (prevFacing != controller.collisions.faceDir) {
-      transform.localScale = Vector3.Scale(transform.localScale, new Vector3(-1,1,1));
-      prevFacing = controller.collisions.faceDir;
-      print(transform.localScale);
-    }
     CalculateVelocity();
     HandleWallSliding();
 
@@ -126,5 +123,9 @@ public class Player : MonoBehaviour {
     if (velocity.y > minJumpVelocity) {
       velocity.y = minJumpVelocity;
     }
+  }
+
+  public void Shoot() {
+    gunController.Shoot();
   }
 }
