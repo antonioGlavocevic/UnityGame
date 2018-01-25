@@ -2102,7 +2102,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9ad2759a24f82744a6941edbdee50b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletPrefab: {fileID: 1828579600231410, guid: d0b165bf95ad59e4eacaddac636665d9,
+  bulletPrefab: {fileID: 1081290339127578, guid: d0b165bf95ad59e4eacaddac636665d9,
     type: 2}
   firePoint: {fileID: 18244221}
   gunPivot: {fileID: 464977734}
