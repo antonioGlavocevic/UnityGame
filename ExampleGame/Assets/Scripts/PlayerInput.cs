@@ -22,7 +22,13 @@ public class PlayerInput : MonoBehaviour {
       player.OnJumpInputUp();
     }
     if (Input.GetMouseButton(0)) {
-      player.Shoot();
+      player.ShootRed();
+    }
+    if (Input.GetMouseButton(1)) {
+      player.ShootBlue();
+    }
+    if (Input.GetKeyDown(KeyCode.E)) {
+      player.ShootYellow();
     }
   }
 }

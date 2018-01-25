@@ -15,7 +15,7 @@ public class Controller2D : RaycastController {
     collisions.faceDir = 1;
   }
 
-  public void Move(Vector2 displacement, bool standingOnPlatform) {
+  public void Move(Vector2 displacement, bool standingOnPlatform = false) {
     Move(displacement, Vector2.zero, standingOnPlatform);
   }
 

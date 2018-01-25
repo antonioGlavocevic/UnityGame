@@ -14,7 +14,7 @@ public class Bullet : MonoBehaviour {
 
   private new BoxCollider2D collider;
 
-  private void Start() {
+  protected virtual void Start() {
     collider = GetComponent<BoxCollider2D>();
   }
 
@@ -35,9 +35,11 @@ public class Bullet : MonoBehaviour {
     if (hit) {
       IBulletInteractable hitObject = hit.collider.GetComponent<IBulletInteractable>();
       if (hitObject != null) {
-        hitObject.HitByRedBullet(hit);
+        OnHitObject(hitObject, hit);
       }
       Destroy(gameObject);
     }
   }
+
+  protected virtual void OnHitObject(IBulletInteractable hitObject, RaycastHit2D hit) { }
 }

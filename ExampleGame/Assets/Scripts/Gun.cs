@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class Gun : MonoBehaviour {
 
-  public GameObject bulletPrefab;
+  public GameObject redBulletPrefab;
+  public GameObject blueBulletPrefab;
+  public GameObject yellowBulletPrefab;
   public Transform firePoint;
   public Transform gunPivot;
   public float bulletSpeed = 1f;
@@ -21,12 +23,27 @@ public class Gun : MonoBehaviour {
     gunPivot.rotation = Quaternion.Euler (0f, 0f, rotationZ);
   }
 
-  public void Shoot () {
+  public void ShootRed () {
     if (Time.time > timeToFire) {
-      Bullet bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
+      RedBullet bullet = Instantiate(redBulletPrefab, firePoint.position, firePoint.rotation).GetComponent<RedBullet>();
       bullet.speed = bulletSpeed;
       bullet.lifetime = bulletLifetime;
       timeToFire = Time.time + 1/fireRate;
     }
+  }
+
+  public void ShootBlue () {
+    if (Time.time > timeToFire) {
+      BlueBullet bullet = Instantiate(blueBulletPrefab, firePoint.position, firePoint.rotation).GetComponent<BlueBullet>();
+      bullet.speed = bulletSpeed;
+      bullet.lifetime = bulletLifetime;
+      timeToFire = Time.time + 1/fireRate;
+    }
+  }
+
+  public void ShootYellow() {
+    YellowBullet bullet = Instantiate(yellowBulletPrefab, firePoint.position, firePoint.rotation).GetComponent<YellowBullet>();
+      bullet.speed = bulletSpeed;
+      bullet.lifetime = bulletLifetime;
   }
 }

@@ -125,7 +125,15 @@ public class Player : MonoBehaviour {
     }
   }
 
-  public void Shoot() {
-    gunController.Shoot();
+  public void ShootRed() {
+    gunController.ShootRed();
+  }
+
+  public void ShootBlue() {
+    gunController.ShootBlue();
+  }
+
+  public void ShootYellow() {
+    gunController.ShootYellow();
   }
 }

@@ -6,7 +6,15 @@ public class GunController : MonoBehaviour {
 
   public Gun gun;
   
-  public void Shoot() {
-    gun.Shoot();
+  public void ShootRed() {
+    gun.ShootRed();
+  }
+
+  public void ShootBlue() {
+    gun.ShootBlue();
+  }
+
+  public void ShootYellow() {
+    gun.ShootYellow();
   }
 }
