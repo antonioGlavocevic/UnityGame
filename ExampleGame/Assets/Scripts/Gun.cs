@@ -25,7 +25,7 @@ public class Gun : MonoBehaviour {
 
   public void ShootRed () {
     if (Time.time > timeToFire) {
-      RedBullet bullet = Instantiate(redBulletPrefab, firePoint.position, firePoint.rotation).GetComponent<RedBullet>();
+      Bullet bullet = Instantiate(redBulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
       bullet.speed = bulletSpeed;
       bullet.lifetime = bulletLifetime;
       timeToFire = Time.time + 1/fireRate;
@@ -34,7 +34,7 @@ public class Gun : MonoBehaviour {
 
   public void ShootBlue () {
     if (Time.time > timeToFire) {
-      BlueBullet bullet = Instantiate(blueBulletPrefab, firePoint.position, firePoint.rotation).GetComponent<BlueBullet>();
+      Bullet bullet = Instantiate(blueBulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
       bullet.speed = bulletSpeed;
       bullet.lifetime = bulletLifetime;
       timeToFire = Time.time + 1/fireRate;
@@ -42,7 +42,7 @@ public class Gun : MonoBehaviour {
   }
 
   public void ShootYellow() {
-    YellowBullet bullet = Instantiate(yellowBulletPrefab, firePoint.position, firePoint.rotation).GetComponent<YellowBullet>();
+      Bullet bullet = Instantiate(yellowBulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
       bullet.speed = bulletSpeed;
       bullet.lifetime = bulletLifetime;
   }

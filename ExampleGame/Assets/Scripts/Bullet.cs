@@ -2,20 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent (typeof (BoxCollider2D))]
 public class Bullet : MonoBehaviour {
-
+  
   public LayerMask collisionMask;
-
+  public Color bulletColor;
+  public BulletStats bulletStats;
+  
   [HideInInspector]
   public float speed;
   [HideInInspector]
   public float lifetime;
 
-  private new BoxCollider2D collider;
-
-  protected virtual void Start() {
-    collider = GetComponent<BoxCollider2D>();
+  private void Start() {
+    MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
+    meshRenderer.material.color = bulletColor;
   }
 
   private void Update() {
@@ -41,5 +41,19 @@ public class Bullet : MonoBehaviour {
     }
   }
 
-  protected virtual void OnHitObject(IBulletInteractable hitObject, RaycastHit2D hit) { }
+  private void OnHitObject(IBulletInteractable hitObject, RaycastHit2D hit) {
+    hitObject.HitByBullet(hit, bulletStats);
+  }
+
+  public enum BulletType {
+    Red, Yellow, Blue
+  }
+
+  [System.Serializable]
+  public struct BulletStats {
+    public BulletType bulletType;
+    public float damage;
+    public float slow;
+    public float knockbackForce;
+  }
 }

@@ -31,7 +31,7 @@ public class PlatformController : RaycastController {
     }
   }
 
-  void Update () {
+  private void Update () {
     UpdateRaycastOrigins();
     Vector3 velocity = CalulatePlatformMovement();
     CalculatePassengerMovement(velocity);
@@ -41,12 +41,12 @@ public class PlatformController : RaycastController {
     MovePassengers(false);
 	}
 
-  float Ease(float x) {
+  private float Ease(float x) {
     float a = easeAmount + 1;
     return Mathf.Pow(x, a) / (Mathf.Pow(x, a) + Mathf.Pow(1 - x, a));
   }
 
-  Vector3 CalulatePlatformMovement() {
+  private Vector3 CalulatePlatformMovement() {
     if (Time.time < nextMoveTime) {
       return Vector3.zero;
     }
@@ -74,7 +74,7 @@ public class PlatformController : RaycastController {
     return newPos - transform.position;
   }
 
-  void MovePassengers(bool beforeMovePlatform) {
+  private void MovePassengers(bool beforeMovePlatform) {
     foreach (PassengerMovement passenger in passengerMovement) {
       if (!passengerDictionary.ContainsKey(passenger.transform)) {
         passengerDictionary.Add(passenger.transform, passenger.transform.GetComponent<Controller2D>());
@@ -85,7 +85,7 @@ public class PlatformController : RaycastController {
     }
   }
 
-  void CalculatePassengerMovement(Vector3 velocity) {
+  private void CalculatePassengerMovement(Vector3 velocity) {
     HashSet<Transform> movedPassengers = new HashSet<Transform>();
     passengerMovement = new List<PassengerMovement>();
 
