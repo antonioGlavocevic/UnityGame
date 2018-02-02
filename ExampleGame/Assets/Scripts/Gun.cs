@@ -50,11 +50,19 @@ public class Gun : MonoBehaviour {
   }
 
   public void ShootRed () {
+    timeToFire -= Time.deltaTime;
     if (timeToFire <= 0 && secondsOfRedLeft > 0) {
-      Bullet bullet = Instantiate(redBulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
-      bullet.speed = bulletSpeed;
-      bullet.lifetime = bulletLifetime;
-      timeToFire = 1/fireRate;
+      GameObject bulletObj = ObjectPooler.SharedInstance.GetPooledObject("RedBullet");
+      if (bulletObj != null) {
+        bulletObj.transform.position = firePoint.position;
+        bulletObj.transform.rotation = firePoint.rotation;
+        bulletObj.SetActive(true);
+
+        Bullet bullet = bulletObj.GetComponent<Bullet>();
+        bullet.speed = bulletSpeed;
+        bullet.lifetime = bulletLifetime;
+        timeToFire = 1/fireRate;
+      }
     }
   }
 
