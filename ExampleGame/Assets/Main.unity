@@ -219,11 +219,11 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4842695101106588, guid: 55f653b90a5d3bf448fc491e4321f89a, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 7.2
+      value: 8.24
       objectReference: {fileID: 0}
     - target: {fileID: 4842695101106588, guid: 55f653b90a5d3bf448fc491e4321f89a, type: 2}
       propertyPath: m_LocalPosition.y
-      value: -7.6
+      value: -7.99
       objectReference: {fileID: 0}
     - target: {fileID: 4842695101106588, guid: 55f653b90a5d3bf448fc491e4321f89a, type: 2}
       propertyPath: m_LocalPosition.z
@@ -248,6 +248,21 @@ Prefab:
     - target: {fileID: 4842695101106588, guid: 55f653b90a5d3bf448fc491e4321f89a, type: 2}
       propertyPath: m_RootOrder
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114135592179441806, guid: 55f653b90a5d3bf448fc491e4321f89a,
+        type: 2}
+      propertyPath: fireRate
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 114135592179441806, guid: 55f653b90a5d3bf448fc491e4321f89a,
+        type: 2}
+      propertyPath: maxAmmo
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 114135592179441806, guid: 55f653b90a5d3bf448fc491e4321f89a,
+        type: 2}
+      propertyPath: maxSustainRed
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 55f653b90a5d3bf448fc491e4321f89a, type: 2}
