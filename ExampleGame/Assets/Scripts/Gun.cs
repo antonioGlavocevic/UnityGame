@@ -23,6 +23,12 @@ public class Gun : MonoBehaviour {
   
   float timeToFire = 0;
 
+  private void Awake() {
+    ObjectPooler.Instance.CreatePool(redBulletPrefab, 3, true);
+    ObjectPooler.Instance.CreatePool(blueBulletPrefab, 3, true);
+    ObjectPooler.Instance.CreatePool(yellowBulletPrefab, 3, true);
+  }
+
   private void Start() {
     secondsOfRedLeft = maxSustainRed;
   }
@@ -52,7 +58,7 @@ public class Gun : MonoBehaviour {
   public void ShootRed () {
     timeToFire -= Time.deltaTime;
     if (timeToFire <= 0 && secondsOfRedLeft > 0) {
-      GameObject bulletObj = ObjectPooler.SharedInstance.GetPooledObject("RedBullet");
+      GameObject bulletObj = ObjectPooler.Instance.GetPooledObject(redBulletPrefab);
       if (bulletObj != null) {
         bulletObj.transform.position = firePoint.position;
         bulletObj.transform.rotation = firePoint.rotation;
