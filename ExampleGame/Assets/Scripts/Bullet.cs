@@ -17,13 +17,16 @@ public class Bullet : MonoBehaviour {
     MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
     meshRenderer.material.color = bulletColor;
   }
+  
+  private void OnEnable() {
+    Invoke("Die",lifetime);
+  }
 
   private void Update() {
     float moveDistance = speed * Time.deltaTime;
     Vector2 translation = Vector2.right * moveDistance;
     CheckCollisions(moveDistance);
     transform.Translate(translation);
-    Destroy(gameObject, lifetime);
   }
 
   private void CheckCollisions(float moveDistance) {
@@ -37,8 +40,12 @@ public class Bullet : MonoBehaviour {
       if (hitObject != null) {
         OnHitObject(hitObject, hit);
       }
-      Destroy(gameObject);
+      Die();
     }
+  }
+
+  private void Die() {
+    gameObject.SetActive(false);
   }
 
   private void OnHitObject(IBulletInteractable hitObject, RaycastHit2D hit) {

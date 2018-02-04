@@ -21,8 +21,11 @@ public class PlayerInput : MonoBehaviour {
     if (Input.GetKeyUp(KeyCode.Space)) {
       player.OnJumpInputUp();
     }
-    if (Input.GetMouseButton(0)) {
+    if (Input.GetMouseButtonDown(0)) {
       player.ShootRed();
+    }
+    if (Input.GetMouseButtonUp(0)) {
+      player.StopRed();
     }
     if (Input.GetMouseButton(1)) {
       player.ShootBlue();
