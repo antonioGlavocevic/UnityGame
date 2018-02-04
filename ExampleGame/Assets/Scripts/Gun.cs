@@ -22,6 +22,7 @@ public class Gun : MonoBehaviour {
   public bool firing = false;
   
   float timeToFire = 0;
+  public bool fireLockout = false;
 
   private void Awake() {
     ObjectPooler.Instance.CreatePool(redBulletPrefab, 3, true);
@@ -34,11 +35,14 @@ public class Gun : MonoBehaviour {
   }
 
   private void Update() {
+    if (secondsOfRedLeft == maxSustainRed) {
+      fireLockout = false;
+    }
     if (timeUntilRecharge <= 0) {
       secondsOfRedLeft += Time.deltaTime * rechargeMultiplier;
       secondsOfRedLeft = Mathf.Clamp(secondsOfRedLeft,0,maxSustainRed);
     }
-    if (firing) {
+    if (firing && !fireLockout) {
       ShootRed();
       secondsOfRedLeft -= Time.deltaTime;
       secondsOfRedLeft = Mathf.Clamp(secondsOfRedLeft,0,maxSustainRed);
@@ -69,6 +73,9 @@ public class Gun : MonoBehaviour {
         bullet.lifetime = bulletLifetime;
         timeToFire = 1/fireRate;
       }
+    }
+    if (secondsOfRedLeft <= 0) {
+      fireLockout = true;
     }
   }
 
