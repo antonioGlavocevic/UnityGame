@@ -75,6 +75,6 @@ public class ObjectPoolItem {
     prefab.SetActive(false);
     prefab.transform.parent = parent;
     poolList.Add(prefab);
-    lastGetIndex = poolList.Count;
+    lastGetIndex = (poolList.Count - 1);
   }
 }

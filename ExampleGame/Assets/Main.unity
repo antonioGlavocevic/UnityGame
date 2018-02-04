@@ -249,26 +249,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 2
       objectReference: {fileID: 0}
-    - target: {fileID: 114135592179441806, guid: 55f653b90a5d3bf448fc491e4321f89a,
-        type: 2}
-      propertyPath: fireRate
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 114135592179441806, guid: 55f653b90a5d3bf448fc491e4321f89a,
-        type: 2}
-      propertyPath: maxAmmo
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 114135592179441806, guid: 55f653b90a5d3bf448fc491e4321f89a,
-        type: 2}
-      propertyPath: maxSustainRed
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 114135592179441806, guid: 55f653b90a5d3bf448fc491e4321f89a,
-        type: 2}
-      propertyPath: rechargeDelay
-      value: 2
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 55f653b90a5d3bf448fc491e4321f89a, type: 2}
   m_IsPrefabParent: 0
@@ -2038,19 +2018,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4edb2bb4c8962784db737b5fe3666db6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemsToPool:
-  - objectToPool: {fileID: 1351707435502494, guid: d06001ceff7123747bb7d1fcd1560820,
-      type: 2}
-    amountToPool: 3
-    shouldExpand: 1
-  - objectToPool: {fileID: 1652456679209630, guid: e0e14b940156f034b87d821e6f37ca01,
-      type: 2}
-    amountToPool: 3
-    shouldExpand: 1
-  - objectToPool: {fileID: 1499286158886724, guid: c66e005f9c616f043a5643c04224f2ea,
-      type: 2}
-    amountToPool: 3
-    shouldExpand: 1
 --- !u!4 &1992157365
 Transform:
   m_ObjectHideFlags: 0
