@@ -131,13 +131,14 @@ public class Gun : MonoBehaviour {
     if (redTank.CanStreamFire(Time.deltaTime) && timeToStreamFire <= 0) {
       GameObject bulletObj = ObjectPooler.Instance.GetPooledObject(redBulletPrefab);
       if (bulletObj != null) {
+        Bullet bullet = bulletObj.GetComponent<Bullet>();
+        bullet.speed = bulletSpeed;
+        bullet.lifetime = bulletLifetime;
+
         bulletObj.transform.position = firePoint.position;
         bulletObj.transform.rotation = firePoint.rotation;
         bulletObj.SetActive(true);
 
-        Bullet bullet = bulletObj.GetComponent<Bullet>();
-        bullet.speed = bulletSpeed;
-        bullet.lifetime = bulletLifetime;
         timeToStreamFire = 1/streamFireRate;
       }
     }
@@ -147,13 +148,14 @@ public class Gun : MonoBehaviour {
     if (blueTank.CanStreamFire(Time.deltaTime) && timeToStreamFire <= 0) {
       GameObject bulletObj = ObjectPooler.Instance.GetPooledObject(blueBulletPrefab);
       if (bulletObj != null) {
+        Bullet bullet = bulletObj.GetComponent<Bullet>();
+        bullet.speed = bulletSpeed;
+        bullet.lifetime = bulletLifetime;
+
         bulletObj.transform.position = firePoint.position;
         bulletObj.transform.rotation = firePoint.rotation;
         bulletObj.SetActive(true);
 
-        Bullet bullet = bulletObj.GetComponent<Bullet>();
-        bullet.speed = bulletSpeed;
-        bullet.lifetime = bulletLifetime;
         timeToStreamFire = 1/streamFireRate;
       }
     }
@@ -163,13 +165,14 @@ public class Gun : MonoBehaviour {
     if (timeToBlastFire <= 0 && yellowTank.CanBlastFire()) {
       GameObject bulletObj = ObjectPooler.Instance.GetPooledObject(yellowBulletPrefab);
       if (bulletObj != null) {
+        Bullet bullet = bulletObj.GetComponent<Bullet>();
+        bullet.speed = bulletSpeed;
+        bullet.lifetime = bulletLifetime;
+
         bulletObj.transform.position = firePoint.position;
         bulletObj.transform.rotation = firePoint.rotation;
         bulletObj.SetActive(true);
 
-        Bullet bullet = bulletObj.GetComponent<Bullet>();
-        bullet.speed = bulletSpeed;
-        bullet.lifetime = bulletLifetime;
         timeToBlastFire = blastFireDelay;
       }
     }
