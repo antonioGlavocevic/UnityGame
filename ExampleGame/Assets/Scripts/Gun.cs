@@ -5,24 +5,86 @@ using UnityEngine;
 public class Gun : MonoBehaviour {
 
   public GameObject redBulletPrefab;
+  public GasTank redTank;
   public GameObject blueBulletPrefab;
+  public GasTank blueTank;
   public GameObject yellowBulletPrefab;
+  public GasTank yellowTank;
   public Transform firePoint;
   public Transform gunPivot;
 
   public float bulletSpeed = 1f;
   public float bulletLifetime = 2f;
-  public float fireRate = 5f;
+  public float streamFireRate = 5f;
+  float timeToStreamFire = 0;
+  public float blastFireDelay = 2f;
+  float timeToBlastFire = 0;
 
-  public float maxSustainRed = 4f;
-  public float secondsOfRedLeft;
-  public float rechargeDelay = 1f;
-  public float timeUntilRecharge = 0;
-  public float rechargeMultiplier = 1f;
-  public bool firing = false;
-  
-  float timeToFire = 0;
-  public bool fireLockout = false;
+  public bool redTrigger = false;
+  public bool blueTrigger = false;
+  public bool yellowTrigger = false;
+
+  [System.Serializable]
+  public struct GasTank {
+    public float fireTime;
+    public float fireTimeRemaining;
+    /*float fireTimeRemaining {
+      get { return fireTimeRemaining; }
+      set { fireTimeRemaining = Mathf.Clamp(value,0,fireTime); }
+    }*/
+    public float rechargeDelay;
+    public float rechargeDelayRemaining;
+    /*float rechargeDelayRemaining {
+      get { return rechargeDelayRemaining; }
+      set { rechargeDelayRemaining = Mathf.Clamp(value,0,rechargeDelay); }
+    }*/
+    public float rechargeMultiplier;
+    bool lockout;
+
+    public void Setup() {
+      fireTimeRemaining = fireTime;
+      rechargeDelayRemaining = rechargeDelay;
+      lockout = false;
+    }
+
+    public void Update(float deltaTime) {
+      if (fireTimeRemaining == fireTime) {
+        lockout = false;
+      }
+      if (rechargeDelayRemaining <= 0) {
+        fireTimeRemaining += deltaTime * rechargeMultiplier;
+        fireTimeRemaining = Mathf.Clamp(fireTimeRemaining,0,fireTime);
+      }
+      rechargeDelayRemaining -= deltaTime;
+      rechargeDelayRemaining = Mathf.Clamp(rechargeDelayRemaining,0,rechargeDelay);
+    }
+
+    public bool CanStreamFire(float deltaTime) {
+      if (!lockout && fireTimeRemaining > 0) {
+        rechargeDelayRemaining = rechargeDelay;
+        fireTimeRemaining -= deltaTime;
+        fireTimeRemaining = Mathf.Clamp(fireTimeRemaining,0,fireTime);
+        return true;
+      }
+      if (fireTimeRemaining <= 0) {
+        lockout = true;
+      }
+      return false;
+    }
+
+    public bool CanBlastFire() {
+      if (!lockout && fireTimeRemaining > (fireTime * 0.25f * 0.25f)) {
+        rechargeDelayRemaining = rechargeDelay;
+        fireTimeRemaining -= fireTime * 0.25f;
+        fireTimeRemaining = Mathf.Clamp(fireTimeRemaining,0,fireTime);
+        return true;
+      }
+      if (fireTimeRemaining <= 0) {
+        lockout = true;
+      }
+      return false;
+    }
+  }
 
   private void Awake() {
     ObjectPooler.Instance.CreatePool(redBulletPrefab, 3, true);
@@ -31,37 +93,42 @@ public class Gun : MonoBehaviour {
   }
 
   private void Start() {
-    secondsOfRedLeft = maxSustainRed;
+    redTank.Setup();
+    blueTank.Setup();
+    yellowTank.Setup();
   }
 
   private void Update() {
-    if (secondsOfRedLeft == maxSustainRed) {
-      fireLockout = false;
-    }
-    if (timeUntilRecharge <= 0) {
-      secondsOfRedLeft += Time.deltaTime * rechargeMultiplier;
-      secondsOfRedLeft = Mathf.Clamp(secondsOfRedLeft,0,maxSustainRed);
-    }
-    if (firing && !fireLockout) {
-      ShootRed();
-      secondsOfRedLeft -= Time.deltaTime;
-      secondsOfRedLeft = Mathf.Clamp(secondsOfRedLeft,0,maxSustainRed);
-      timeUntilRecharge = rechargeDelay;
-    }
-    else {
-      timeUntilRecharge -= Time.deltaTime * rechargeMultiplier;
-      timeUntilRecharge = Mathf.Clamp(timeUntilRecharge,0,rechargeDelay);
-    }
     Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
     Vector3 difference = mousePosition - gunPivot.position;
     difference.Normalize();
     float rotationZ = Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;
     gunPivot.rotation = Quaternion.Euler (0f, 0f, rotationZ);
+
+    timeToStreamFire -= Time.deltaTime;
+    timeToStreamFire = Mathf.Clamp(timeToStreamFire,0,streamFireRate);
+    timeToBlastFire -= Time.deltaTime;
+    timeToBlastFire = Mathf.Clamp(timeToBlastFire,0,blastFireDelay);
+
+    redTank.Update(Time.deltaTime);
+    blueTank.Update(Time.deltaTime);
+    yellowTank.Update(Time.deltaTime);
+    if (redTrigger) {
+      ShootRed();
+    }
+    else if (blueTrigger) {
+      ShootBlue();
+    }
+    else if (yellowTrigger) {
+      ShootYellow();
+    }
+    redTrigger = false;
+    blueTrigger = false;
+    yellowTrigger = false;
   }
 
   public void ShootRed () {
-    timeToFire -= Time.deltaTime;
-    if (timeToFire <= 0 && secondsOfRedLeft > 0) {
+    if (redTank.CanStreamFire(Time.deltaTime) && timeToStreamFire <= 0) {
       GameObject bulletObj = ObjectPooler.Instance.GetPooledObject(redBulletPrefab);
       if (bulletObj != null) {
         bulletObj.transform.position = firePoint.position;
@@ -71,27 +138,40 @@ public class Gun : MonoBehaviour {
         Bullet bullet = bulletObj.GetComponent<Bullet>();
         bullet.speed = bulletSpeed;
         bullet.lifetime = bulletLifetime;
-        timeToFire = 1/fireRate;
+        timeToStreamFire = 1/streamFireRate;
       }
-    }
-    if (secondsOfRedLeft <= 0) {
-      fireLockout = true;
     }
   }
 
   public void ShootBlue () {
-    timeToFire -= Time.deltaTime;
-    if (timeToFire <= 0) {
-      Bullet bullet = Instantiate(blueBulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
-      bullet.speed = bulletSpeed;
-      bullet.lifetime = bulletLifetime;
-      timeToFire = 1/fireRate;
+    if (blueTank.CanStreamFire(Time.deltaTime) && timeToStreamFire <= 0) {
+      GameObject bulletObj = ObjectPooler.Instance.GetPooledObject(blueBulletPrefab);
+      if (bulletObj != null) {
+        bulletObj.transform.position = firePoint.position;
+        bulletObj.transform.rotation = firePoint.rotation;
+        bulletObj.SetActive(true);
+
+        Bullet bullet = bulletObj.GetComponent<Bullet>();
+        bullet.speed = bulletSpeed;
+        bullet.lifetime = bulletLifetime;
+        timeToStreamFire = 1/streamFireRate;
+      }
     }
   }
 
   public void ShootYellow() {
-      Bullet bullet = Instantiate(yellowBulletPrefab, firePoint.position, firePoint.rotation).GetComponent<Bullet>();
-      bullet.speed = bulletSpeed;
-      bullet.lifetime = bulletLifetime;
+    if (timeToBlastFire <= 0 && yellowTank.CanBlastFire()) {
+      GameObject bulletObj = ObjectPooler.Instance.GetPooledObject(yellowBulletPrefab);
+      if (bulletObj != null) {
+        bulletObj.transform.position = firePoint.position;
+        bulletObj.transform.rotation = firePoint.rotation;
+        bulletObj.SetActive(true);
+
+        Bullet bullet = bulletObj.GetComponent<Bullet>();
+        bullet.speed = bulletSpeed;
+        bullet.lifetime = bulletLifetime;
+        timeToBlastFire = blastFireDelay;
+      }
+    }
   }
 }

@@ -125,18 +125,22 @@ public class Player : MonoBehaviour {
   }
 
   public void ShootRed() {
-    gun.firing = true;
+    gun.redTrigger = true;
   }
 
   public void StopRed() {
-    gun.firing = false;
+    gun.redTrigger = false;
   }
 
   public void ShootBlue() {
-    gun.ShootBlue();
+    gun.blueTrigger = true;
+  }
+
+  public void StopBlue() {
+    gun.blueTrigger = false;
   }
 
   public void ShootYellow() {
-    gun.ShootYellow();
+    gun.yellowTrigger = true;
   }
 }
