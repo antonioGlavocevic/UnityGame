@@ -13,31 +13,28 @@ public class Gun : MonoBehaviour {
   public Transform firePoint;
   public Transform gunPivot;
 
-  public float bulletSpeed = 1f;
-  public float bulletLifetime = 2f;
-  public float streamFireRate = 5f;
+  public float bulletSpeed = 20f;
+  public float bulletLifetime = 0.25f;
+  public float streamFireRate = 30f;
   float timeToStreamFire = 0;
   public float blastFireDelay = 2f;
   float timeToBlastFire = 0;
 
+  [HideInInspector]
   public bool redTrigger = false;
+  [HideInInspector]
   public bool blueTrigger = false;
+  [HideInInspector]
   public bool yellowTrigger = false;
+
+  Dictionary<GameObject,Bullet> bulletDictionary;
 
   [System.Serializable]
   public struct GasTank {
     public float fireTime;
-    public float fireTimeRemaining;
-    /*float fireTimeRemaining {
-      get { return fireTimeRemaining; }
-      set { fireTimeRemaining = Mathf.Clamp(value,0,fireTime); }
-    }*/
+    float fireTimeRemaining;
     public float rechargeDelay;
-    public float rechargeDelayRemaining;
-    /*float rechargeDelayRemaining {
-      get { return rechargeDelayRemaining; }
-      set { rechargeDelayRemaining = Mathf.Clamp(value,0,rechargeDelay); }
-    }*/
+    float rechargeDelayRemaining;
     public float rechargeMultiplier;
     bool lockout;
 
@@ -87,9 +84,10 @@ public class Gun : MonoBehaviour {
   }
 
   private void Awake() {
-    ObjectPooler.Instance.CreatePool(redBulletPrefab, 3, true);
-    ObjectPooler.Instance.CreatePool(blueBulletPrefab, 3, true);
-    ObjectPooler.Instance.CreatePool(yellowBulletPrefab, 3, true);
+    bulletDictionary = new Dictionary<GameObject, Bullet>();
+    ObjectPooler.Instance.CreatePool(redBulletPrefab, 7, true);
+    ObjectPooler.Instance.CreatePool(blueBulletPrefab, 7, true);
+    ObjectPooler.Instance.CreatePool(yellowBulletPrefab, 5, true);
   }
 
   private void Start() {
@@ -131,7 +129,10 @@ public class Gun : MonoBehaviour {
     if (redTank.CanStreamFire(Time.deltaTime) && timeToStreamFire <= 0) {
       GameObject bulletObj = ObjectPooler.Instance.GetPooledObject(redBulletPrefab);
       if (bulletObj != null) {
-        Bullet bullet = bulletObj.GetComponent<Bullet>();
+        if (!bulletDictionary.ContainsKey(bulletObj)) {
+          bulletDictionary.Add(bulletObj, bulletObj.GetComponent<Bullet>());
+        }
+        Bullet bullet = bulletDictionary[bulletObj];
         bullet.speed = bulletSpeed;
         bullet.lifetime = bulletLifetime;
 
@@ -148,7 +149,10 @@ public class Gun : MonoBehaviour {
     if (blueTank.CanStreamFire(Time.deltaTime) && timeToStreamFire <= 0) {
       GameObject bulletObj = ObjectPooler.Instance.GetPooledObject(blueBulletPrefab);
       if (bulletObj != null) {
-        Bullet bullet = bulletObj.GetComponent<Bullet>();
+        if (!bulletDictionary.ContainsKey(bulletObj)) {
+          bulletDictionary.Add(bulletObj, bulletObj.GetComponent<Bullet>());
+        }
+        Bullet bullet = bulletDictionary[bulletObj];
         bullet.speed = bulletSpeed;
         bullet.lifetime = bulletLifetime;
 
@@ -163,16 +167,22 @@ public class Gun : MonoBehaviour {
 
   public void ShootYellow() {
     if (timeToBlastFire <= 0 && yellowTank.CanBlastFire()) {
-      GameObject bulletObj = ObjectPooler.Instance.GetPooledObject(yellowBulletPrefab);
-      if (bulletObj != null) {
-        Bullet bullet = bulletObj.GetComponent<Bullet>();
-        bullet.speed = bulletSpeed;
-        bullet.lifetime = bulletLifetime;
+      for (int i = -2; i <= 2; i++)
+      {
+        GameObject bulletObj = ObjectPooler.Instance.GetPooledObject(yellowBulletPrefab);
+        if (bulletObj != null) {
+          if (!bulletDictionary.ContainsKey(bulletObj)) {
+            bulletDictionary.Add(bulletObj, bulletObj.GetComponent<Bullet>());
+          }
+          Bullet bullet = bulletDictionary[bulletObj];
+          bullet.speed = bulletSpeed;
+          bullet.lifetime = bulletLifetime;
 
-        bulletObj.transform.position = firePoint.position;
-        bulletObj.transform.rotation = firePoint.rotation;
-        bulletObj.SetActive(true);
-
+          bulletObj.transform.position = firePoint.position;
+          Vector3 rotation = new Vector3(firePoint.eulerAngles.x,firePoint.eulerAngles.y,firePoint.eulerAngles.z + (i * 5.625f));
+          bulletObj.transform.rotation = Quaternion.Euler(rotation);
+          bulletObj.SetActive(true);
+        }
         timeToBlastFire = blastFireDelay;
       }
     }
