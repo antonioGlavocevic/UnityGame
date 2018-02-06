@@ -290,27 +290,24 @@ MonoBehaviour:
   redBulletPrefab: {fileID: 1351707435502494, guid: d06001ceff7123747bb7d1fcd1560820,
     type: 2}
   redTank:
-    fireTime: 4
-    fireTimeRemaining: 0
-    rechargeDelay: 2
-    rechargeDelayRemaining: 0
-    rechargeMultiplier: 2
+    timeToOverheat: 4
+    blastHeatPercent: 25
+    cooldownDelay: 2
+    cooldownTime: 2
   blueBulletPrefab: {fileID: 1652456679209630, guid: e0e14b940156f034b87d821e6f37ca01,
     type: 2}
   blueTank:
-    fireTime: 4
-    fireTimeRemaining: 0
-    rechargeDelay: 2
-    rechargeDelayRemaining: 0
-    rechargeMultiplier: 2
+    timeToOverheat: 4
+    blastHeatPercent: 25
+    cooldownDelay: 2
+    cooldownTime: 2
   yellowBulletPrefab: {fileID: 1499286158886724, guid: c66e005f9c616f043a5643c04224f2ea,
     type: 2}
   yellowTank:
-    fireTime: 4
-    fireTimeRemaining: 0
-    rechargeDelay: 2
-    rechargeDelayRemaining: 0
-    rechargeMultiplier: 2
+    timeToOverheat: 4
+    blastHeatPercent: 25
+    cooldownDelay: 2
+    cooldownTime: 2
   firePoint: {fileID: 4556337679219630}
   gunPivot: {fileID: 4465191095006738}
   bulletSpeed: 20
