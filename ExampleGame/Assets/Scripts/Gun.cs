@@ -4,11 +4,9 @@ using UnityEngine;
 
 public class Gun : MonoBehaviour {
 
-  public GameObject redBulletPrefab;
+  public List<GameObject> bulletPrefabs;
   public GasTank redTank;
-  public GameObject blueBulletPrefab;
   public GasTank blueTank;
-  public GameObject yellowBulletPrefab;
   public GasTank yellowTank;
   public Transform firePoint;
   public Transform gunPivot;
@@ -40,18 +38,12 @@ public class Gun : MonoBehaviour {
 
   private void Awake() {
     bulletSpeed = bulletTravelDistance/bulletLifetime;
-    Bullet bullet = redBulletPrefab.GetComponent<Bullet>();
-    bullet.speed = bulletSpeed;
-    bullet.lifetime = bulletLifetime;
-    bullet = blueBulletPrefab.GetComponent<Bullet>();
-    bullet.speed = bulletSpeed;
-    bullet.lifetime = bulletLifetime;
-    bullet = yellowBulletPrefab.GetComponent<Bullet>();
-    bullet.speed = bulletSpeed;
-    bullet.lifetime = bulletLifetime;
-    ObjectPooler.Instance.CreatePool(redBulletPrefab, 10, true);
-    ObjectPooler.Instance.CreatePool(blueBulletPrefab, 10, true);
-    ObjectPooler.Instance.CreatePool(yellowBulletPrefab, 5, true);
+    foreach (GameObject bulletPrefab in bulletPrefabs) {
+      Bullet bullet = bulletPrefab.GetComponent<Bullet>();
+      bullet.speed = bulletSpeed;
+      bullet.lifetime = bulletLifetime;
+      ObjectPooler.Instance.CreatePool(bulletPrefab, 10, true);
+    }
   }
 
   private void Start() {
@@ -61,36 +53,91 @@ public class Gun : MonoBehaviour {
   }
 
   private void Update() {
-    deltaTime = Time.deltaTime;
-    timeToStreamFire -= deltaTime;
-    timeToBlastFire -= deltaTime;
+    RotateGun();
+    ManageCooldowns();
+    Shoot();
+  }
 
+  private void RotateGun() {
     Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
     Vector3 difference = mousePosition - gunPivot.position;
     difference.Normalize();
     float rotationZ = Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;
     gunPivot.rotation = Quaternion.Euler (0f, 0f, rotationZ);
+  }
+
+  private void ManageCooldowns() {
+    deltaTime = Time.deltaTime;
+    timeToStreamFire -= deltaTime;
+    timeToBlastFire -= deltaTime;
 
     redTank.Cooldown(deltaTime);
     blueTank.Cooldown(deltaTime);
     yellowTank.Cooldown(deltaTime);
+  }
+
+  private void Shoot() {
+    bool redActive = false;
+    bool blueActive = false;
+    bool yellowActive = false;
+    List<GasTank> tanks = new List<GasTank>();
     if (redTrigger && !redTank.isOverheated) {
-      ShootRed();
+      tanks.Add(redTank);
+      redActive = true;
     }
-    else if (blueTrigger && !blueTank.isOverheated) {
-      ShootBlue();
+    if (blueTrigger && !blueTank.isOverheated) {
+      tanks.Add(blueTank);
+      blueActive = true;
     }
-    else if (yellowTrigger && !yellowTank.isOverheated) {
-      ShootYellow();
+    if (yellowTrigger && !yellowTank.isOverheated) {
+      tanks.Add(yellowTank);
+      yellowActive = true;
     }
+
+    GameObject bulletPrefab = SelectBullet(redActive, blueActive, yellowActive);
+    if (bulletPrefab != null) {
+      if (yellowActive) {
+        bool superBlast = redActive && blueActive && yellowActive;
+        BlastFire(bulletPrefab, tanks, superBlast);
+      }
+      else if (redActive || blueActive) {
+        StreamFire(bulletPrefab, tanks);
+      }
+    }
+    
     redTrigger = false;
     blueTrigger = false;
     yellowTrigger = false;
   }
 
-  public void ShootRed () {
-    if (timeToStreamFire <= 0) {
-      GameObject bulletObj = ObjectPooler.Instance.GetPooledObject(redBulletPrefab);
+  private GameObject SelectBullet(bool r, bool b, bool y) {
+    if (r && b && y) {
+      return bulletPrefabs[(int)Bullet.BulletType.Black];
+    }
+    else if (r && b) {
+      return bulletPrefabs[(int)Bullet.BulletType.Purple];
+    }
+    else if (r && y) {
+      return bulletPrefabs[(int)Bullet.BulletType.Orange];
+    }
+    else if (b && y) {
+      return bulletPrefabs[(int)Bullet.BulletType.Green];
+    }
+    else if (r) {
+      return bulletPrefabs[(int)Bullet.BulletType.Red];
+    }
+    else if (b) {
+      return bulletPrefabs[(int)Bullet.BulletType.Blue];
+    }
+    else if (y) {
+      return bulletPrefabs[(int)Bullet.BulletType.Yellow];
+    }
+    return null;
+  }
+
+  private void StreamFire(GameObject bulletPrefab, List<GasTank> tanks) {
+    if (timeToStreamFire == 0) {
+      GameObject bulletObj = ObjectPooler.Instance.GetPooledObject(bulletPrefab);
       if (bulletObj != null) {
         bulletObj.transform.position = firePoint.position;
         bulletObj.transform.rotation = firePoint.rotation;
@@ -99,28 +146,16 @@ public class Gun : MonoBehaviour {
         timeToStreamFire = 1/streamFireRate;
       }
     }
-    redTank.StreamFired(deltaTime);
-  }
-
-  public void ShootBlue () {
-    if (timeToStreamFire <= 0) {
-      GameObject bulletObj = ObjectPooler.Instance.GetPooledObject(blueBulletPrefab);
-      if (bulletObj != null) {
-        bulletObj.transform.position = firePoint.position;
-        bulletObj.transform.rotation = firePoint.rotation;
-        bulletObj.SetActive(true);
-
-        timeToStreamFire = 1/streamFireRate;
-      }
+    foreach (GasTank tank in tanks) {
+      tank.StreamFired(deltaTime);
     }
-    blueTank.StreamFired(deltaTime);
   }
 
-  public void ShootYellow() {
-    if (timeToBlastFire <= 0) {
+  private void BlastFire(GameObject bulletPrefab, List<GasTank> tanks, bool superBlast) {
+    if (timeToBlastFire == 0) {
       for (int i = -2; i <= 2; i++)
       {
-        GameObject bulletObj = ObjectPooler.Instance.GetPooledObject(yellowBulletPrefab);
+        GameObject bulletObj = ObjectPooler.Instance.GetPooledObject(bulletPrefab);
         if (bulletObj != null) {
           bulletObj.transform.position = firePoint.position;
           Vector3 rotation = new Vector3(firePoint.eulerAngles.x,firePoint.eulerAngles.y,firePoint.eulerAngles.z + (i * 5.625f));
@@ -129,12 +164,19 @@ public class Gun : MonoBehaviour {
         }
         timeToBlastFire = blastFireDelay;
       }
-      yellowTank.BlastFired();
+      foreach (GasTank tank in tanks) {
+        if (superBlast) {
+          tank.SuperBlastFired();
+        }
+        else {
+          tank.BlastFired();
+        }
+      }
     }
   }
 
   [System.Serializable]
-  public struct GasTank {
+  public class GasTank {
     public float timeToOverheat;
     [Range (0,100)]
     public float blastHeatPercent;
@@ -189,6 +231,10 @@ public class Gun : MonoBehaviour {
 
     public void BlastFired() {
       IncreaseHeat(blastHeat);
+    }
+
+    public void SuperBlastFired() {
+      IncreaseHeat(maxHeat);
     }
 
     private void IncreaseHeat(float heat) {
