@@ -128,7 +128,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1857854965121008}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.27, y: -7.15, z: 0}
+  m_LocalPosition: {x: 79.76, y: 2.25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4465191095006738}
@@ -254,13 +254,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gun: {fileID: 114135592179441806}
-  maxJumpHeight: 4
-  minJumpHeight: 1
-  timeToJumpApex: 0.4
-  accelerationTimeAirborne: 0.2
-  accelerationTimeGrounded: 0.1
+  minJumpHeight: 2.25
+  maxJumpHeight: 4.25
+  maxJumpDistance: 4
   moveSpeed: 6
-  wallJumpClimb: {x: 7.5, y: 16}
+  accelerationTime: 0.2
+  wallJumpClimb: {x: 4, y: 20}
   wallJumpOff: {x: 8.5, y: 7}
   wallLeap: {x: 18, y: 17}
   wallSlideSpeedMax: 3

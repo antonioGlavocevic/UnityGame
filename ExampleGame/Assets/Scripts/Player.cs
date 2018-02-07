@@ -7,23 +7,24 @@ public class Player : MonoBehaviour {
 
   public Gun gun;
 
-  public float minJumpHeight = 2f;
-  public float maxJumpHeight = 4f;
-  public float maxJumpDistance = 2f;
-  public float moveSpeed = 6f;
-  public float accelerationTime = 0.2f;
+  public float minJumpHeight;
+  public float maxJumpHeight;
+  public float maxJumpDistance;
+  public float moveSpeed;
+  public float accelerationTime;
 
   public Vector2 wallJumpClimb;
   public Vector2 wallJumpOff;
   public Vector2 wallLeap;
-  public float wallSlideSpeedMax = 3f;
-  public float wallStickTime = 0.25f;
+  public float wallSlideSpeedMax;
+  public float wallStickTime;
   float timeToWallUnstick;
   
+  bool applyGravityHeavy = false;
   float gravity;
   float gravityHeavy;
   float maxJumpVelocity;
-  float minJumpVelocity;
+  float startingJumpHeight;
   Vector3 velocity;
 
   float velocityXSmoothing;
@@ -31,6 +32,7 @@ public class Player : MonoBehaviour {
   Controller2D controller;
 
   Vector2 directionalInput;
+  bool jumpedOffSlope;
   bool wallSliding;
   int wallDirX;
 
@@ -42,14 +44,17 @@ public class Player : MonoBehaviour {
     gravity = -(2 * maxJumpHeight * Mathf.Pow(moveSpeed, 2)) / Mathf.Pow(xDistanceAtPeak, 2);
     gravityHeavy = -(2 * maxJumpHeight * Mathf.Pow(moveSpeed, 2)) / Mathf.Pow(xDistanceAtPeakHeavy, 2);
     maxJumpVelocity = (2 * maxJumpHeight * moveSpeed) / xDistanceAtPeak;
-    minJumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(gravity) * minJumpHeight);
   }
 
   private void Update() {
     CalculateVelocity();
-    //HandleWallSliding();
+    HandleWallSliding();
 
     controller.Move(velocity * Time.deltaTime, directionalInput);
+
+    if (controller.collisions.below) {
+      applyGravityHeavy = false;
+    }
 
     if (controller.collisions.above || controller.collisions.below) {
       if (controller.collisions.slidingDownMaxSlope) {
@@ -63,9 +68,12 @@ public class Player : MonoBehaviour {
 
   private void CalculateVelocity() {
     float targetVelocityX = directionalInput.x * moveSpeed;
-    //velocity.x = Mathf.SmoothDamp(velocity.x, targetVelocityX, ref velocityXSmoothing, accelerationTime);
-    velocity.x = targetVelocityX;
-    if (velocity.y <= 0) {
+    velocity.x = Mathf.SmoothDamp(velocity.x, targetVelocityX, ref velocityXSmoothing, accelerationTime);
+
+    if (!controller.collisions.slidingDownMaxSlope && velocity.y <= 0) {
+      applyGravityHeavy = true;
+    }
+    if (applyGravityHeavy) {
       velocity.y += gravityHeavy * Time.deltaTime;
     }
     else {
@@ -102,6 +110,8 @@ public class Player : MonoBehaviour {
   }
 
   public void OnJumpInputDown() {
+    jumpedOffSlope = false;
+    startingJumpHeight = transform.position.y;
     if (wallSliding) {
       if (wallDirX == directionalInput.x) {
         velocity.x = -wallDirX * wallJumpClimb.x;
@@ -118,7 +128,7 @@ public class Player : MonoBehaviour {
     }
     if (controller.collisions.below) {
       if (controller.collisions.slidingDownMaxSlope) {
-        //NOTE: might be error here
+        jumpedOffSlope = true;
         velocity.y = maxJumpVelocity * controller.collisions.slopeNormal.y;
         velocity.x = maxJumpVelocity * controller.collisions.slopeNormal.x;
       }
@@ -129,8 +139,14 @@ public class Player : MonoBehaviour {
   }
 
   public void OnJumpInputUp() {
-    if (velocity.y > minJumpVelocity) {
+    float jumpHeightDifference = transform.position.y - startingJumpHeight;
+    float distanceToMinJumpHeight = minJumpHeight - jumpHeightDifference;
+    if (!jumpedOffSlope && !controller.collisions.below && jumpHeightDifference > 0 && distanceToMinJumpHeight > 0) {
+      float minJumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(gravity) * distanceToMinJumpHeight);
       velocity.y = minJumpVelocity;
+    }
+    else {
+      applyGravityHeavy = true;
     }
   }
 

@@ -277,7 +277,7 @@ Prefab:
     - target: {fileID: 114040748380892668, guid: 55f653b90a5d3bf448fc491e4321f89a,
         type: 2}
       propertyPath: minJumpHeight
-      value: 1
+      value: 2.25
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 55f653b90a5d3bf448fc491e4321f89a, type: 2}
