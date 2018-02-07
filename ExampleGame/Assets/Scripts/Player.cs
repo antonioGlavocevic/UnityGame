@@ -5,8 +5,6 @@ using UnityEngine;
 [RequireComponent (typeof (Controller2D))]
 public class Player : MonoBehaviour {
 
-  public Gun gun;
-
   public float minJumpHeight;
   public float maxJumpHeight;
   public float maxJumpDistance;
@@ -148,25 +146,5 @@ public class Player : MonoBehaviour {
     else {
       applyGravityHeavy = true;
     }
-  }
-
-  public void ShootRed() {
-    gun.redTrigger = true;
-  }
-
-  public void StopRed() {
-    gun.redTrigger = false;
-  }
-
-  public void ShootBlue() {
-    gun.blueTrigger = true;
-  }
-
-  public void StopBlue() {
-    gun.blueTrigger = false;
-  }
-
-  public void ShootYellow() {
-    gun.yellowTrigger = true;
   }
 }

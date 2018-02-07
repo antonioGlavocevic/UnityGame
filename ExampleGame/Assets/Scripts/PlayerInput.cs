@@ -5,6 +5,8 @@ using UnityEngine;
 [RequireComponent (typeof (Player))]
 public class PlayerInput : MonoBehaviour {
 
+  public Gun gun;
+
   Player player;
 
   private void Start() {
@@ -22,13 +24,16 @@ public class PlayerInput : MonoBehaviour {
       player.OnJumpInputUp();
     }
     if (Input.GetMouseButton(0)) {
-      player.ShootRed();
+      gun.Shoot();
     }
-    if (Input.GetMouseButton(1)) {
-      player.ShootBlue();
+    if (Input.GetKeyDown(KeyCode.Q)) {
+      gun.redTrigger = !gun.redTrigger;
     }
-    if (Input.GetKey(KeyCode.E)) {
-      player.ShootYellow();
+    if (Input.GetKeyDown(KeyCode.E)) {
+      gun.blueTrigger = !gun.blueTrigger;
+    }
+    if (Input.GetKeyDown(KeyCode.R)) {
+      gun.yellowTrigger = !gun.yellowTrigger;
     }
   }
 }

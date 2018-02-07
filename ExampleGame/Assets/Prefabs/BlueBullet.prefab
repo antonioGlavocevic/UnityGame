@@ -99,9 +99,9 @@ MonoBehaviour:
     m_Bits: 1536
   bulletColor: {r: 0, g: 0.49803922, b: 1, a: 0}
   bulletStats:
-    bulletType: 2
+    bulletType: 1
     damage: 0
     slow: 2
     knockbackForce: 0
-  speed: 0
-  lifetime: 0
+  speed: 8.333333
+  lifetime: 0.6

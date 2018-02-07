@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Gun : MonoBehaviour {
 
+  public GasLevelIndicator gasLevelIndicator;
+
   public List<GameObject> bulletPrefabs;
   public GasTank redTank;
   public GasTank blueTank;
@@ -55,7 +57,9 @@ public class Gun : MonoBehaviour {
   private void Update() {
     RotateGun();
     ManageCooldowns();
-    Shoot();
+    if (gasLevelIndicator != null) {
+      gasLevelIndicator.SetLevels(redTank.currentHeat/redTank.maxHeat, blueTank.currentHeat/blueTank.maxHeat, yellowTank.currentHeat/yellowTank.maxHeat);
+    }
   }
 
   private void RotateGun() {
@@ -76,7 +80,7 @@ public class Gun : MonoBehaviour {
     yellowTank.Cooldown(deltaTime);
   }
 
-  private void Shoot() {
+  public void Shoot() {
     bool redActive = false;
     bool blueActive = false;
     bool yellowActive = false;
@@ -104,10 +108,6 @@ public class Gun : MonoBehaviour {
         StreamFire(bulletPrefab, tanks);
       }
     }
-    
-    redTrigger = false;
-    blueTrigger = false;
-    yellowTrigger = false;
   }
 
   private GameObject SelectBullet(bool r, bool b, bool y) {
@@ -180,7 +180,8 @@ public class Gun : MonoBehaviour {
     public float timeToOverheat;
     [Range (0,100)]
     public float blastHeatPercent;
-    float maxHeat;
+    [HideInInspector]
+    public float maxHeat;
     float heatPerSecond;
     float blastHeat;
 
