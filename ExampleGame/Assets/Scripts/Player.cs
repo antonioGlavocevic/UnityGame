@@ -10,6 +10,7 @@ public class Player : MonoBehaviour {
   public float minJumpHeight;
   public float maxJumpHeight;
   public float maxJumpDistance;
+  public float downArcMultiplier;
   public float moveSpeed;
   public float accelerationTime;
 
@@ -32,15 +33,14 @@ public class Player : MonoBehaviour {
   Controller2D controller;
 
   Vector2 directionalInput;
-  bool jumpedOffSlope;
   bool wallSliding;
   int wallDirX;
 
   private void Start () {
     controller = GetComponent<Controller2D>();
 
-    float xDistanceAtPeak = (2*maxJumpDistance)/3;
-    float xDistanceAtPeakHeavy = xDistanceAtPeak/2;
+    float xDistanceAtPeak = maxJumpDistance/(1 + downArcMultiplier);
+    float xDistanceAtPeakHeavy = xDistanceAtPeak * downArcMultiplier;
     gravity = -(2 * maxJumpHeight * Mathf.Pow(moveSpeed, 2)) / Mathf.Pow(xDistanceAtPeak, 2);
     gravityHeavy = -(2 * maxJumpHeight * Mathf.Pow(moveSpeed, 2)) / Mathf.Pow(xDistanceAtPeakHeavy, 2);
     maxJumpVelocity = (2 * maxJumpHeight * moveSpeed) / xDistanceAtPeak;
@@ -110,7 +110,6 @@ public class Player : MonoBehaviour {
   }
 
   public void OnJumpInputDown() {
-    jumpedOffSlope = false;
     startingJumpHeight = transform.position.y;
     if (wallSliding) {
       if (wallDirX == directionalInput.x) {
@@ -128,7 +127,6 @@ public class Player : MonoBehaviour {
     }
     if (controller.collisions.below) {
       if (controller.collisions.slidingDownMaxSlope) {
-        jumpedOffSlope = true;
         velocity.y = maxJumpVelocity * controller.collisions.slopeNormal.y;
         velocity.x = maxJumpVelocity * controller.collisions.slopeNormal.x;
       }
@@ -141,9 +139,11 @@ public class Player : MonoBehaviour {
   public void OnJumpInputUp() {
     float jumpHeightDifference = transform.position.y - startingJumpHeight;
     float distanceToMinJumpHeight = minJumpHeight - jumpHeightDifference;
-    if (!jumpedOffSlope && !controller.collisions.below && jumpHeightDifference > 0 && distanceToMinJumpHeight > 0) {
-      float minJumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(gravity) * distanceToMinJumpHeight);
-      velocity.y = minJumpVelocity;
+    if (distanceToMinJumpHeight > 0) {
+      float velocityToMinHeight = Mathf.Sqrt(2 * Mathf.Abs(gravity) * distanceToMinJumpHeight);
+      if (velocity.y > velocityToMinHeight) {
+        velocity.y = velocityToMinHeight;
+      }
     }
     else {
       applyGravityHeavy = true;
