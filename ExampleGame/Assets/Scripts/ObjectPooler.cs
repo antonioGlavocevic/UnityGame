@@ -2,17 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectPooler : MonoBehaviour {
-  
-  static ObjectPooler _Instance;
-  public static ObjectPooler Instance {
-    get {
-      if (_Instance == null) {
-        _Instance = FindObjectOfType<ObjectPooler>();
-      }
-      return _Instance;
-    }
-  }
+public class ObjectPooler : Singleton<ObjectPooler> {
 
   Dictionary<int, ObjectPoolItem> poolDictionary = new Dictionary<int, ObjectPoolItem>();
 
