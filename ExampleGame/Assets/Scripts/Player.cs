@@ -32,6 +32,7 @@ public class Player : MonoBehaviour {
 
   Vector2 directionalInput;
   bool wallSliding;
+  bool jumpedThisFrame = false;
   int wallDirX;
 
   private void Start () {
@@ -39,20 +40,20 @@ public class Player : MonoBehaviour {
 
     float xDistanceAtPeak = maxJumpDistance/(1 + downArcMultiplier);
     float xDistanceAtPeakHeavy = xDistanceAtPeak * downArcMultiplier;
-    gravity = -(2 * maxJumpHeight * Mathf.Pow(moveSpeed, 2)) / Mathf.Pow(xDistanceAtPeak, 2);
-    gravityHeavy = -(2 * maxJumpHeight * Mathf.Pow(moveSpeed, 2)) / Mathf.Pow(xDistanceAtPeakHeavy, 2);
+    gravity = -(2 * maxJumpHeight * moveSpeed * moveSpeed) / (xDistanceAtPeak * xDistanceAtPeak);
+    gravityHeavy = -(2 * maxJumpHeight * moveSpeed * moveSpeed) / (xDistanceAtPeakHeavy * xDistanceAtPeakHeavy);
     maxJumpVelocity = (2 * maxJumpHeight * moveSpeed) / xDistanceAtPeak;
   }
 
   private void Update() {
-    CalculateVelocity();
-    HandleWallSliding();
-
-    controller.Move(velocity * Time.deltaTime, directionalInput);
-
     if (controller.collisions.below) {
       applyGravityHeavy = false;
     }
+
+    CalculateVelocity();
+    HandleWallSliding();
+    Vector2 verletVelocity = new Vector2(velocity.x * Time.deltaTime, velocity.y * Time.deltaTime + 0.5f * gravity * Time.deltaTime * Time.deltaTime);
+    controller.Move(verletVelocity, directionalInput);
 
     if (controller.collisions.above || controller.collisions.below) {
       if (controller.collisions.slidingDownMaxSlope) {
@@ -62,20 +63,24 @@ public class Player : MonoBehaviour {
         velocity.y = 0;
       }
     }
+
+    jumpedThisFrame = false;
   }
 
   private void CalculateVelocity() {
     float targetVelocityX = directionalInput.x * moveSpeed;
     velocity.x = Mathf.SmoothDamp(velocity.x, targetVelocityX, ref velocityXSmoothing, accelerationTime);
 
-    if (!controller.collisions.slidingDownMaxSlope && velocity.y <= 0) {
-      applyGravityHeavy = true;
-    }
-    if (applyGravityHeavy) {
-      velocity.y += gravityHeavy * Time.deltaTime;
-    }
-    else {
-      velocity.y += gravity * Time.deltaTime;
+    if (!jumpedThisFrame) {
+      if (!controller.collisions.slidingDownMaxSlope && velocity.y <= 0) {
+        applyGravityHeavy = true;
+      }
+      if (applyGravityHeavy) {
+        velocity.y += gravityHeavy * Time.deltaTime;
+      }
+      else {
+        velocity.y += gravity * Time.deltaTime;
+      }
     }
   }
 
@@ -108,6 +113,7 @@ public class Player : MonoBehaviour {
   }
 
   public void OnJumpInputDown() {
+    jumpedThisFrame = true;
     startingJumpHeight = transform.position.y;
     if (wallSliding) {
       if (wallDirX == directionalInput.x) {
