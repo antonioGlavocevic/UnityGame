@@ -22,7 +22,7 @@ public class PlatformController : RaycastController {
   List<PassengerMovement> passengerMovement;
   Dictionary<Transform, Controller2D> passengerDictionary = new Dictionary<Transform, Controller2D>();
 
-  public override void Start() {
+  protected override void Start() {
     base.Start();
 
     globalWaypoints = new Vector3[localWaypoints.Length];
@@ -31,7 +31,7 @@ public class PlatformController : RaycastController {
     }
   }
 
-  private void Update () {
+  void Update () {
     UpdateRaycastOrigins();
     Vector3 velocity = CalulatePlatformMovement();
     CalculatePassengerMovement(velocity);
@@ -41,12 +41,12 @@ public class PlatformController : RaycastController {
     MovePassengers(false);
 	}
 
-  private float Ease(float x) {
+  float Ease(float x) {
     float a = easeAmount + 1;
     return Mathf.Pow(x, a) / (Mathf.Pow(x, a) + Mathf.Pow(1 - x, a));
   }
 
-  private Vector3 CalulatePlatformMovement() {
+  Vector3 CalulatePlatformMovement() {
     if (Time.time < nextMoveTime) {
       return Vector3.zero;
     }
@@ -74,7 +74,7 @@ public class PlatformController : RaycastController {
     return newPos - transform.position;
   }
 
-  private void MovePassengers(bool beforeMovePlatform) {
+  void MovePassengers(bool beforeMovePlatform) {
     foreach (PassengerMovement passenger in passengerMovement) {
       if (!passengerDictionary.ContainsKey(passenger.transform)) {
         passengerDictionary.Add(passenger.transform, passenger.transform.GetComponent<Controller2D>());
@@ -85,7 +85,7 @@ public class PlatformController : RaycastController {
     }
   }
 
-  private void CalculatePassengerMovement(Vector3 velocity) {
+  void CalculatePassengerMovement(Vector3 velocity) {
     HashSet<Transform> movedPassengers = new HashSet<Transform>();
     passengerMovement = new List<PassengerMovement>();
 
@@ -163,7 +163,7 @@ public class PlatformController : RaycastController {
     }
   }
 
-  private void OnDrawGizmos() {
+  void OnDrawGizmos() {
     if (localWaypoints != null) {
       Gizmos.color = Color.red;
       float size = 0.3f;

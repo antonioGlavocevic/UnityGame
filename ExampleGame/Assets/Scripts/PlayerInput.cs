@@ -9,11 +9,11 @@ public class PlayerInput : MonoBehaviour {
 
   Player player;
 
-  private void Start() {
+  void Start() {
     player = GetComponent<Player>();
   }
 
-  private void Update() {
+  void Update() {
     Vector2 directionalInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
     player.SetDirectionalInput(directionalInput);
 

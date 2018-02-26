@@ -13,23 +13,23 @@ public class Bullet : MonoBehaviour {
   [HideInInspector]
   public float lifetime;
 
-  private void Start() {
+  void Start() {
     MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
     meshRenderer.material.color = bulletColor;
   }
   
-  private void OnEnable() {
+  void OnEnable() {
     Invoke("Die",lifetime);
   }
 
-  private void Update() {
+  void Update() {
     float moveDistance = speed * Time.deltaTime;
     Vector2 translation = Vector2.right * moveDistance;
     CheckCollisions(moveDistance);
     transform.Translate(translation);
   }
 
-  private void CheckCollisions(float moveDistance) {
+  void CheckCollisions(float moveDistance) {
     float rayLength = transform.localScale.x/2 + moveDistance;
     Vector2 rayOrigin = new Vector2(transform.position.x, transform.position.y);
     Debug.DrawRay(rayOrigin, transform.right * rayLength, Color.blue);
@@ -44,11 +44,11 @@ public class Bullet : MonoBehaviour {
     }
   }
 
-  private void Die() {
+  void Die() {
     gameObject.SetActive(false);
   }
 
-  private void OnHitObject(IBulletInteractable hitObject, RaycastHit2D hit) {
+  void OnHitObject(IBulletInteractable hitObject, RaycastHit2D hit) {
     hitObject.HitByBullet(hit, bulletStats);
   }
 

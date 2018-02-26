@@ -38,7 +38,7 @@ public class Gun : MonoBehaviour {
 
   float deltaTime;
 
-  private void Awake() {
+  void Awake() {
     bulletSpeed = bulletTravelDistance/bulletLifetime;
     foreach (GameObject bulletPrefab in bulletPrefabs) {
       Bullet bullet = bulletPrefab.GetComponent<Bullet>();
@@ -48,13 +48,13 @@ public class Gun : MonoBehaviour {
     }
   }
 
-  private void Start() {
+  void Start() {
     redTank.Setup();
     blueTank.Setup();
     yellowTank.Setup();
   }
 
-  private void Update() {
+  void Update() {
     RotateGun();
     ManageCooldowns();
     if (gasLevelIndicator != null) {
@@ -62,7 +62,7 @@ public class Gun : MonoBehaviour {
     }
   }
 
-  private void RotateGun() {
+  void RotateGun() {
     Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
     Vector3 difference = mousePosition - gunPivot.position;
     difference.Normalize();
@@ -70,7 +70,7 @@ public class Gun : MonoBehaviour {
     gunPivot.rotation = Quaternion.Euler (0f, 0f, rotationZ);
   }
 
-  private void ManageCooldowns() {
+  void ManageCooldowns() {
     deltaTime = Time.deltaTime;
     timeToStreamFire -= deltaTime;
     timeToBlastFire -= deltaTime;
@@ -110,7 +110,7 @@ public class Gun : MonoBehaviour {
     }
   }
 
-  private GameObject SelectBullet(bool r, bool b, bool y) {
+  GameObject SelectBullet(bool r, bool b, bool y) {
     if (r && b && y) {
       return bulletPrefabs[(int)Bullet.BulletType.Black];
     }
@@ -135,7 +135,7 @@ public class Gun : MonoBehaviour {
     return null;
   }
 
-  private void StreamFire(GameObject bulletPrefab, List<GasTank> tanks) {
+  void StreamFire(GameObject bulletPrefab, List<GasTank> tanks) {
     if (timeToStreamFire == 0) {
       GameObject bulletObj = ObjectPooler.Instance.GetPooledObject(bulletPrefab);
       if (bulletObj != null) {
@@ -151,7 +151,7 @@ public class Gun : MonoBehaviour {
     }
   }
 
-  private void BlastFire(GameObject bulletPrefab, List<GasTank> tanks, bool superBlast) {
+  void BlastFire(GameObject bulletPrefab, List<GasTank> tanks, bool superBlast) {
     if (timeToBlastFire == 0) {
       for (int i = -2; i <= 2; i++)
       {
@@ -238,7 +238,7 @@ public class Gun : MonoBehaviour {
       IncreaseHeat(maxHeat);
     }
 
-    private void IncreaseHeat(float heat) {
+    void IncreaseHeat(float heat) {
       cooldownDelayRemaining = cooldownDelay;
       currentHeat += heat;
       if (currentHeat == maxHeat) {

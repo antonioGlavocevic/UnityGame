@@ -21,19 +21,19 @@ public class Enemy : MonoBehaviour, IBulletInteractable {
   public float accelerationTimeGrounded = .1f;
   float gravity = -50;
 
-  private void Start() {
+  void Start() {
     controller = GetComponent<Controller2D>();
     health = startingHealth;
     timeSinceHitByBlue = blueHitLinger;
   }
 
-  private void Update() {
+  void Update() {
     float moveDistance = moveSpeed * Time.deltaTime;
     CalculateVelocity();
     controller.Move(velocity * Time.deltaTime);
   }
 
-  private void CalculateVelocity() {
+  void CalculateVelocity() {
     float targetVelocityX = moveSpeed;
     if (timeSinceHitByBlue < blueHitLinger) {
       targetVelocityX = moveSpeed/2;
@@ -51,7 +51,7 @@ public class Enemy : MonoBehaviour, IBulletInteractable {
     }
   }
 
-  private void HitByRedBullet() {
+  void HitByRedBullet() {
     if (Time.time > timeSinceHitByRed) {
       timeSinceHitByRed = Time.time + 1/redHitPerSecond;
       health -= 1f;
@@ -61,16 +61,16 @@ public class Enemy : MonoBehaviour, IBulletInteractable {
     }
   }
 
-  private void HitByBlueBullet() {
+  void HitByBlueBullet() {
     timeSinceHitByBlue = 0;
   }
 
-  private void HitByYellowBullet() {
+  void HitByYellowBullet() {
     //calucate direction and apply vector
     velocity.x += -yellowHitForce;
   }
 
-  private void Die() {
+  void Die() {
     Destroy(gameObject);
   }
 }

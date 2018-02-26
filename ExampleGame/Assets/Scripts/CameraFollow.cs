@@ -21,11 +21,11 @@ public class CameraFollow : MonoBehaviour {
 
   bool lookAheadStopped;
 
-  private void Start() {
+  void Start() {
     focusArea = new FocusArea(target.collider.bounds, focusAreaSize);
   }
 
-  private void LateUpdate() {
+  void LateUpdate() {
     focusArea.Update(target.collider.bounds);
 
     Vector2 focusPosition = focusArea.centre + Vector2.up * verticalOffset;
@@ -51,7 +51,7 @@ public class CameraFollow : MonoBehaviour {
     transform.position = (Vector3)focusPosition + Vector3.forward * -10;
   }
 
-  private void OnDrawGizmos() {
+  void OnDrawGizmos() {
     Gizmos.color = new Color(1, 0, 0, 0.5f);
     Gizmos.DrawCube(focusArea.centre, focusAreaSize);
   }

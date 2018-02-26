@@ -10,7 +10,7 @@ public class Controller2D : RaycastController {
   [HideInInspector]
   public Vector2 playerInput;
 
-  public override void Start() {
+  protected override void Start() {
     base.Start();
     collisions.faceDir = 1;
   }
@@ -43,7 +43,7 @@ public class Controller2D : RaycastController {
     }
   }
 
-  private void HorizontalCollisions(ref Vector2 displacement) {
+  void HorizontalCollisions(ref Vector2 displacement) {
     float directionX = collisions.faceDir;
     float rayLength = Mathf.Abs(displacement.x) + skinWidth;
 
@@ -94,7 +94,7 @@ public class Controller2D : RaycastController {
     }
   }
 
-  private void VerticalCollisions(ref Vector2 displacement) {
+  void VerticalCollisions(ref Vector2 displacement) {
     float directionY = Mathf.Sign(displacement.y);
     float rayLength = Mathf.Abs(displacement.y) + skinWidth;
     for (int i = 0; i < verticalRayCount; i++) {
@@ -149,7 +149,7 @@ public class Controller2D : RaycastController {
     }
   }
 
-  private void ClimbSlope(ref Vector2 displacement, float slopeAngle, Vector2 slopeNormal) {
+  void ClimbSlope(ref Vector2 displacement, float slopeAngle, Vector2 slopeNormal) {
     float moveDistance = Mathf.Abs(displacement.x);
     float climbdisplacementY = Mathf.Sin(slopeAngle * Mathf.Deg2Rad) * moveDistance;
 
@@ -163,7 +163,7 @@ public class Controller2D : RaycastController {
     }
   }
 
-  private void DescendSlope(ref Vector2 displacement) {
+  void DescendSlope(ref Vector2 displacement) {
     RaycastHit2D maxSlopeHitLeft = Physics2D.Raycast(raycastOrigins.bottomLeft, Vector2.down, Mathf.Abs(displacement.y) + skinWidth, collisionMask);
     RaycastHit2D maxSlopeHitRight = Physics2D.Raycast(raycastOrigins.bottomRight, Vector2.down, Mathf.Abs(displacement.y) + skinWidth, collisionMask);
 
@@ -198,7 +198,7 @@ public class Controller2D : RaycastController {
     }
   }
 
-  private void SlidingDownMaxSlope(RaycastHit2D hit, ref Vector2 displacement) {
+  void SlidingDownMaxSlope(RaycastHit2D hit, ref Vector2 displacement) {
     if (hit) {
       float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
       if (slopeAngle > maxSlopeAngle) {
@@ -211,7 +211,7 @@ public class Controller2D : RaycastController {
     }
   }
 
-  private void ResetFallingThroughPlatform() {
+  void ResetFallingThroughPlatform() {
     collisions.fallingThroughPlatform = false;
   }
 

@@ -34,7 +34,7 @@ public class Player : MonoBehaviour {
   bool wallSliding;
   int wallDirX;
 
-  private void Start () {
+  void Start () {
     controller = GetComponent<Controller2D>();
 
     float xDistanceAtPeak = maxJumpDistance/(1 + downArcMultiplier);
@@ -44,7 +44,7 @@ public class Player : MonoBehaviour {
     maxJumpVelocity = (2 * maxJumpHeight * moveSpeed) / xDistanceAtPeak;
   }
 
-  private void Update() {
+  void Update() {
     HandleWallSliding();
     Vector2 verletIntegration = new Vector2(velocity.x * Time.deltaTime, velocity.y * Time.deltaTime + 0.5f * gravity * Time.deltaTime * Time.deltaTime);
     controller.Move(verletIntegration, directionalInput);
@@ -52,7 +52,7 @@ public class Player : MonoBehaviour {
     PostCollisionHandler();
   }
 
-  private void HandleWallSliding() {
+  void HandleWallSliding() {
     wallSliding = false;
     wallDirX = (controller.collisions.left) ? -1 : 1;
     if ((controller.collisions.left || controller.collisions.right) && !controller.collisions.below && velocity.y < 0) {
@@ -76,7 +76,7 @@ public class Player : MonoBehaviour {
     }
   }
 
-  private void CalculateVelocity() {
+  void CalculateVelocity() {
     float targetVelocityX = directionalInput.x * moveSpeed;
     velocity.x = Mathf.SmoothDamp(velocity.x, targetVelocityX, ref velocityXSmoothing, accelerationTime);
 
@@ -91,7 +91,7 @@ public class Player : MonoBehaviour {
     }
   }
 
-  private void PostCollisionHandler() {
+  void PostCollisionHandler() {
     if (controller.collisions.above || controller.collisions.below) {
       if (controller.collisions.slidingDownMaxSlope) {
         velocity.y += controller.collisions.slopeNormal.y * -gravity * Time.deltaTime;
