@@ -32,7 +32,6 @@ public class Player : MonoBehaviour {
 
   Vector2 directionalInput;
   bool wallSliding;
-  bool jumpedThisFrame = false;
   int wallDirX;
 
   private void Start () {
@@ -46,42 +45,11 @@ public class Player : MonoBehaviour {
   }
 
   private void Update() {
-    if (controller.collisions.below) {
-      applyGravityHeavy = false;
-    }
-
-    CalculateVelocity();
     HandleWallSliding();
-    Vector2 verletVelocity = new Vector2(velocity.x * Time.deltaTime, velocity.y * Time.deltaTime + 0.5f * gravity * Time.deltaTime * Time.deltaTime);
-    controller.Move(verletVelocity, directionalInput);
-
-    if (controller.collisions.above || controller.collisions.below) {
-      if (controller.collisions.slidingDownMaxSlope) {
-        velocity.y += controller.collisions.slopeNormal.y * -gravity * Time.deltaTime;
-      }
-      else {
-        velocity.y = 0;
-      }
-    }
-
-    jumpedThisFrame = false;
-  }
-
-  private void CalculateVelocity() {
-    float targetVelocityX = directionalInput.x * moveSpeed;
-    velocity.x = Mathf.SmoothDamp(velocity.x, targetVelocityX, ref velocityXSmoothing, accelerationTime);
-
-    if (!jumpedThisFrame) {
-      if (!controller.collisions.slidingDownMaxSlope && velocity.y <= 0) {
-        applyGravityHeavy = true;
-      }
-      if (applyGravityHeavy) {
-        velocity.y += gravityHeavy * Time.deltaTime;
-      }
-      else {
-        velocity.y += gravity * Time.deltaTime;
-      }
-    }
+    Vector2 verletIntegration = new Vector2(velocity.x * Time.deltaTime, velocity.y * Time.deltaTime + 0.5f * gravity * Time.deltaTime * Time.deltaTime);
+    controller.Move(verletIntegration, directionalInput);
+    CalculateVelocity();
+    PostCollisionHandler();
   }
 
   private void HandleWallSliding() {
@@ -108,12 +76,38 @@ public class Player : MonoBehaviour {
     }
   }
 
+  private void CalculateVelocity() {
+    float targetVelocityX = directionalInput.x * moveSpeed;
+    velocity.x = Mathf.SmoothDamp(velocity.x, targetVelocityX, ref velocityXSmoothing, accelerationTime);
+
+    if (!controller.collisions.slidingDownMaxSlope && velocity.y <= 0) {
+      applyGravityHeavy = true;
+    }
+    if (applyGravityHeavy) {
+      velocity.y += gravityHeavy * Time.deltaTime;
+    }
+    else {
+      velocity.y += gravity * Time.deltaTime;
+    }
+  }
+
+  private void PostCollisionHandler() {
+    if (controller.collisions.above || controller.collisions.below) {
+      if (controller.collisions.slidingDownMaxSlope) {
+        velocity.y += controller.collisions.slopeNormal.y * -gravity * Time.deltaTime;
+      }
+      else {
+        applyGravityHeavy = false;
+        velocity.y = 0;
+      }
+    }
+  }
+
   public void SetDirectionalInput(Vector2 input) {
     directionalInput = input;
   }
 
   public void OnJumpInputDown() {
-    jumpedThisFrame = true;
     startingJumpHeight = transform.position.y;
     if (wallSliding) {
       if (wallDirX == directionalInput.x) {
