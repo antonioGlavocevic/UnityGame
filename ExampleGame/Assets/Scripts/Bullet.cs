@@ -53,7 +53,7 @@ public class Bullet : MonoBehaviour {
   }
 
   public enum BulletType {
-    Red, Blue, Yellow, Purple, Orange, Green, Black
+    Red, Blue, Purple, Yellow, Orange, Green, Black
   }
 
   [System.Serializable]

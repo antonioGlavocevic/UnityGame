@@ -81,56 +81,42 @@ public class Gun : MonoBehaviour {
   }
 
   public void Shoot() {
-    bool redActive = false;
-    bool blueActive = false;
-    bool yellowActive = false;
+    bool streamFire = false;
+    bool blastFire = false;
+    byte activeMask = 0;
     List<GasTank> tanks = new List<GasTank>();
     if (redTrigger && !redTank.isOverheated) {
       tanks.Add(redTank);
-      redActive = true;
+      streamFire = true;
+      activeMask |= 1;
     }
     if (blueTrigger && !blueTank.isOverheated) {
       tanks.Add(blueTank);
-      blueActive = true;
+      streamFire = true;
+      activeMask |= 2;
     }
     if (yellowTrigger && !yellowTank.isOverheated) {
       tanks.Add(yellowTank);
-      yellowActive = true;
+      blastFire = true;
+      activeMask |= 4;
     }
 
-    GameObject bulletPrefab = SelectBullet(redActive, blueActive, yellowActive);
+    GameObject bulletPrefab = (activeMask > 0 && activeMask <= bulletPrefabs.Count) ? bulletPrefabs[activeMask-1] : null;
     if (bulletPrefab != null) {
-      if (yellowActive) {
-        bool superBlast = redActive && blueActive && yellowActive;
+      if (blastFire) {
+        bool superBlast = activeMask == 7;
         BlastFire(bulletPrefab, tanks, superBlast);
       }
-      else if (redActive || blueActive) {
+      else if (streamFire) {
         StreamFire(bulletPrefab, tanks);
       }
     }
   }
 
-  GameObject SelectBullet(bool r, bool b, bool y) {
-    if (r && b && y) {
-      return bulletPrefabs[(int)Bullet.BulletType.Black];
-    }
-    else if (r && b) {
-      return bulletPrefabs[(int)Bullet.BulletType.Purple];
-    }
-    else if (r && y) {
-      return bulletPrefabs[(int)Bullet.BulletType.Orange];
-    }
-    else if (b && y) {
-      return bulletPrefabs[(int)Bullet.BulletType.Green];
-    }
-    else if (r) {
-      return bulletPrefabs[(int)Bullet.BulletType.Red];
-    }
-    else if (b) {
-      return bulletPrefabs[(int)Bullet.BulletType.Blue];
-    }
-    else if (y) {
-      return bulletPrefabs[(int)Bullet.BulletType.Yellow];
+  GameObject SelectBullet(byte activeMask) {
+    int index = activeMask - 1;
+    if (index >= 0 && index < bulletPrefabs.Count) {
+      return bulletPrefabs[activeMask-1];
     }
     return null;
   }
